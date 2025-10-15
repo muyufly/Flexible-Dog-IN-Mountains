@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <title>抓住那只山里灵活的狗</title>
+  <style>
+    *{
+        padding:0;
+        box-sizing:border-box;
+        font-family: "Microsoft YaHei";
+    }
+    body{
+        height:100vh;
+        background-image: url("./pic/ayaka.png");
+        background-size: 100%;
+        font-family:"Microsoft YaHei",sans-serif;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+        overflow:hidden;
+        user-select:none;
+    }
+    h1{margin:.6em 0 .2em;color:slategray;}
+    #doge{
+        position:absolute;
+        width:150px;height:150px;
+        background-image: url("./pic/cheems.jpg");
+        background-size: 100%;
+        cursor:pointer;
+        transition:transform .2s;
+    }
+    #doge:hover{transform:scale(1.2);}
+    #message{
+        height:1.8em;
+        font-weight:bold;
+        color:darkred;
+        text-align:center;
+    }
+    .counter{text-align:center;line-height:1.6em;color:#555;}
+    .restart{
+        width: 100px;
+        height: 25px;
+        background-color: gainsboro;
+        text-align: center;
+        border-radius: 100%;
+        cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+<h1>抓住那只山里灵活的狗</h1>
+<div class="restart" onclick="restart()">重置</div>
+<div id="message"></div>
+<div class="counter">
+    <span id="tried">你已尝试抓山里灵活的狗：0 次</span><br>
+    <span id="fled">山里灵活的狗共逃脱了：0 次</span><br>
+    <span id="caught">你共抓住了山里灵活的狗：0 次</span>
+</div>
+
+<div id="doge"></div>
+
+<script>
+
+let sumSuccess = 0;
+let sumFail    = 0;
+let target     = 0; 
+let clicked    = 0;   
+let Timer      = null;
+
+const doge     = document.getElementById('doge');
+const message  = document.getElementById('message');
+const triedEl  = document.getElementById('tried');
+const fledEl   = document.getElementById('fled');
+const caughtEl = document.getElementById('caught');
+
+
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+function randomPosition(){
+  const pad = 160;
+  doge.style.left = rand(pad, window.innerWidth  - pad) + 'px';
+  doge.style.top  = rand(pad, window.innerHeight - pad) + 'px';
+}
+
+
+function showTip(text){
+  message.textContent = text;
+  clearTimeout(showTip.t);
+  showTip.t = setTimeout(() => message.textContent = '', 2000);
+}
+
+//reset计时器
+function resetTimer(){
+  clearTimeout(Timer);
+  Timer = setTimeout(() => {
+    showTip('山里灵活的狗跑走了！');
+    sumFail++;
+    fledEl.textContent = `山里灵活的狗共逃脱了：${sumFail} 次`;
+    newRound();
+  }, 1200);
+}
+
+function newRound(){
+  clicked = 0;
+  target  = rand(5, 20);
+  randomPosition();
+  resetTimer();
+  triedEl.textContent = `你已尝试抓山里灵活的狗：0 次`;
+}
+
+function restart(){
+  clearTimeout(Timer);
+  sumSuccess = 0; sumFail = 0; clicked = 0;
+  fledEl.textContent   = '山里灵活的狗共逃脱了：0 次';
+  caughtEl.textContent = '你共抓住了山里灵活的狗：0 次';
+  newRound();
+}
+
+doge.addEventListener('click', () => {
+  clicked++;
+  triedEl.textContent = `你已尝试抓山里灵活的狗：${clicked} 次`;
+  resetTimer();
+  randomPosition();
+
+  if (clicked >= target) {
+    clearTimeout(Timer);
+    showTip('你抓住了山里灵活的狗！');
+    sumSuccess++;
+    caughtEl.textContent = `你共抓住了山里灵活的狗：${sumSuccess} 次`;
+    newRound();
+  }
+});
+
+newRound();
+</script>
+</body>
+</html>
